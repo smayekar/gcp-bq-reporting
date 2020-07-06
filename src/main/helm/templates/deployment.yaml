@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+    spec:
+      nodeSelector:
+        container: apps-prod
+      imagePullSecrets:
+            - name: {{ .Values.secret.portr.name }}
+      volumes:
+        - name: {{ .Chart.Name }}-{{ .Values.location }}
+          configMap:
+            name: {{ .Chart.Name }}-{{ .Values.location }}
+            items:
+              - key: application.properties
+                path: application.properties
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        env:
+        - name: GCP_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: gcp-ca3
+              key: google.cloud.credentials
+        - name: GCP_PROJECTID
+          valueFrom:
+            secretKeyRef:
+              name: gcp-ca3
+              key: google.cloud.projectId
+        - name: TEAMS_WEBHOOK
+          valueFrom:
+            secretKeyRef:
+              name: gcp-ca3
+              key: teams.webhook
+        volumeMounts:
+          - name: {{ .Chart.Name }}-{{ .Values.location }}
+            mountPath: "/config"
+            readOnly: true
+        resources:
+{{ toYaml .Values.resources | indent 10 }}

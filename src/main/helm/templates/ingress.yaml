@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    io.ctl.cd/ssl: "{{ .Release.Name }}.gcp.ctl.io"
+    nginx.org/proxy-connect-timeout: "300"
+    nginx.org/proxy-read-timeout: "300"
+    nginx.org/proxy-send-timeout: "300"
+    ingress.kubernetes.io/force-ssl-redirect: 'true'
+  name: {{ template "fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  tls:
+    - hosts:
+        - "{{ .Release.Name }}.gcp.ctl.io"
+      secretName: cpc-license-self-dev
+  rules:
+    - host: "{{ .Release.Name }}.gcp.ctl.io"
+      http:
+        paths:
+        - path: /
+          backend:
+            serviceName: "{{ template "fullname" . }}"
+            servicePort: {{ .Values.service.externalPort }}

@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for GCP BQ Reporting Kubernetes
+name: gcp-bq-reporting
+version: 1.0.0

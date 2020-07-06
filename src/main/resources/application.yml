@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: gcp-bq-reporting
+  profiles:
+    active: "dev"
+  main:
+    banner-mode: "off"
+
+server:
+  port: 30000
+  error:
+    whitelabel:
+      enabled: false
+---
+spring:
+  profiles: dev
+  rest:
+    ctl.url: http://www.centurylink.com/
+logging:
+  level:
+    .: ERROR
+    org.springframework: ERROR
+    io.ctl: info
+  pattern:
+    console: "%d %-6level [%t] %logger{25} - %msg %n"
+    file: "%d %-6level [%t] %logger{25} - %msg %n"
+  file:
+    name: ./log/gcp-bq-reporting.log

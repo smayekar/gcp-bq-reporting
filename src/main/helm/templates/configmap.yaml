@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.location }}
+data:
+  application.properties: |+
+    spring.main.banner-mode=off
+    management.security.enabled=false
